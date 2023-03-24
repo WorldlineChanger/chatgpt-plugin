@@ -958,7 +958,7 @@ export class chatgpt extends plugin {
             debug: Config.debug,
             cache: cacheOptions,
             user: e.sender.user_id,
-            proxy: Config.proxy
+            proxy: Config.proxy,
           })
           // Sydney不实现上下文传递，删除上下文索引
           delete conversation.clientId
@@ -985,6 +985,7 @@ export class chatgpt extends plugin {
           try {
             let opt = _.cloneDeep(conversation) || {}
             opt.toneStyle = Config.toneStyle
+            opt.context = Config.sydneyContext
             response = await bingAIClient.sendMessage(prompt, opt, (token) => {
               reply += token
             })
@@ -1001,7 +1002,7 @@ export class chatgpt extends plugin {
             errorMessage = ''
             break
           } catch (error) {
-            const message = error?.message || error?.data?.message || '与Bing通信时出错.'
+            const message = error?.message || error?.data?.message || error || '出错了'
             if (message !== 'Timed out waiting for first message.') {
               logger.error(error)
             }
