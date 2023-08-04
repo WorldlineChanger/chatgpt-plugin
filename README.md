@@ -1,22 +1,45 @@
-# 云崽qq机器人的chatgpt插件
+![chatgpt-plugin](https://user-images.githubusercontent.com/21212372/232115814-de9a0633-371f-4733-8da0-dd6e912c8a1e.png)
+<div align=center> <h1>云崽QQ机器人的ChatGPT插件</h1> </div>
+<div align=center>
+   
+   <img src ="https://img.shields.io/github/issues/ikechan8370/chatgpt-plugin?logo=github"/>
+<img src ="https://img.shields.io/github/license/ikechan8370/chatgpt-plugin"/>
+<img src ="https://img.shields.io/github/v/tag/ikechan8370/chatgpt-plugin?label=latest%20version&logo=github"/>
+<img src ="https://img.shields.io/github/languages/top/ikechan8370/chatgpt-plugin?logo=github"/>
+</div>
 
-![GitHub issues](https://img.shields.io/github/issues/ikechan8370/chatgpt-plugin?logo=github)
-![GitHub](https://img.shields.io/github/license/ikechan8370/chatgpt-plugin)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/ikechan8370/chatgpt-plugin?label=latest%20version&logo=github)
-![GitHub top language](https://img.shields.io/github/languages/top/ikechan8370/chatgpt-plugin?logo=github)
+
+
+![26224FE397F1E74104C1C007C1A32DDE](https://user-images.githubusercontent.com/21212372/227718994-4d33da74-6886-41d5-afd0-73986b086df0.gif)
+
+
+
+
+
+### 推荐的相关文档和参考资料
+本README
+[手册](https://chatgptplugin.ikechan8370.com/)
+[文档1（建设中）](https://chatgpt-docs.err0r.top/) 
+[插件常见问题（鹤望兰版）](https://www.wolai.com/4FCxxWAdjbrHF29MCJmAQK) 
+[Yunzai常见问题（LUCK小运版）](https://www.wolai.com/oA43vuW71aBnv7UsEysn4T) 
+[憨憨博客](https://blog.hanhanz.top/)
 
 ## 特点
 
-* 支持单人连续对话Conversation，群聊中支持加入其他人的对话
-* API模式下，使用 gpt-3.5-turbo API，ChatGPT官网同款模型，仅需OpenAI Api Key，开箱即用。**注意收费**
-* 支持问答图片截图
-* 支持AI性格调教
-* 支持对接vits回答直接转语音
+* 支持单人连续对话Conversation
+* API模式下，使用 gpt-3.5-turbo 或 gpt-4 API，仅需OpenAI Api Key，开箱即用。**注意收费**
+* 支持问答图片截图和聊天记录导出
+* 支持AI性格调教，角色扮演强烈推荐Bing自定义模式
+* 支持对接vits和Azure等回答直接转语音
 * API3模式下，绕过Cloudflare防护直接访问ChatGPT的SSE API，与官方体验一致，且保留对话记录，在官网可查。免费。
-* (Deprecated)提供基于浏览器的解决方案作为备选，API3不可用的情况下或担心账户安全的用户可以选择使用浏览器模式。
-* 支持新[必应](https://www.bing.com/new)（Beta）
-* 2023-03-15 API3支持GPT-4尝鲜，需要Plus用户
+* (已不再维护)提供基于浏览器的解决方案作为备选，API3不可用的情况下或担心账户安全的用户可以选择使用浏览器模式。
+* 支持新[必应](https://www.bing.com/new)（token负载均衡，限流降级）
+* 2023-03-15 API3支持GPT-4尝鲜，需要Plus用户（疑似被官方阻断暂不支持api3的gpt4）
 * 支持[ChatGLM](https://github.com/THUDM/ChatGLM-6B)模型。基于[自建API](https://github.com/ikechan8370/SimpleChatGLM6BAPI)
+* 2023-04-15 支持[Claude by Slack](https://www.anthropic.com/claude-in-slack )和Poe（WIP）。Claude配置参考[这里](https://ikechan8370.com/archives/chatgpt-plugin-for-yunzaipei-zhi-slack-claude)
+* 2023-05-12 支持星火大模型
+* 2023-05-29 支持gpt-4 API.必应无需cookie即可对话（Sydney和自定义模式）
+* 2023-07 支持智能模式，机器人可以实现禁言、群名片/头衔（需给机器人管理员/群主）、分享音乐视频、主动发音频、对接ap,sr和喵喵等插件、联网搜索等，需api模式0613系列模型。智能模式所需的额外api和搜索api分别可以参考[chatgpt-plugin-extras](https://github.com/ikechan8370/chatgpt-plugin-extras) 和 [search-api](https://github.com/ikechan8370/search-api) 自行搭建，其中后者提供了一个公益版本，前者可使用[huggingface](https://huggingface.co/spaces/ikechan8370/cp-extra)部署
 
 ### 如果觉得这个插件有趣或者对你有帮助，请点一个star吧！
 
@@ -28,16 +51,15 @@ Node.js >= 18 / Node.js >= 14(with node-fetch)
 
 ### 安装
 
-在安装之前，请先判断自己需要使用哪种模式，本插件支持官方API/第三方API/浏览器/必应四种模式。也可以选择**我全都要**(通过qq发送命令`#chatgpt切换浏览器/API/API3/Bing`实时切换)
-
-对于轻量用户可以先使用API模式，有较高要求再转为使用其他模式。
+在安装之前，请先判断自己需要使用哪种模式，本插件支持官方API/第三方API/~~浏览器~~/必应四种模式。也可以选择**我全都要**(通过qq发送命令`#chatgpt切换浏览器/API/API3/Bing`实时切换)
 
 > #### API模式和浏览器模式如何选择？
 >
 > * API模式会调用OpenAI官方提供的gpt-3.5-turbo API，ChatGPT官网同款模型，只需要提供API Key。一般情况下，该种方式响应速度更快，可配置项多，且不会像chatGPT官网一样总出现不可用的现象，但注意API调用是收费的，新用户有18美元试用金可用于支付，价格为`$0.0020/ 1K tokens`。（问题和回答**加起来**算token）
 > * API3模式会调用第三方提供的官网反代API，他会帮你绕过CF防护，需要提供ChatGPT的Token。效果与官网和浏览器一致，但稳定性不一定。发送#chatgpt设置token来设置token。
 > * (Deprecated)浏览器模式通过在本地启动Chrome等浏览器模拟用户访问ChatGPT网站，使得获得和官方以及API2模式一模一样的回复质量，同时保证安全性。缺点是本方法对环境要求较高，需要提供桌面环境和一个可用的代理（能够访问ChatGPT的IP地址），且响应速度不如API，而且高峰期容易无法使用。一般作为API3的下位替代。
-> * 必应（Bing）将调用微软新必应接口进行对话。需要在必应网页能够正常使用新必应且设置有效的Bing登录Cookie方可使用。
+> * 必应（Bing）将调用微软新必应接口进行对话。需要在必应网页能够正常使用新必应且设置有效的Bing登录Cookie方可使用。强烈推荐
+
 1. 进入 Yunzai根目录
 
 2. 请将 chatgpt-plugin 放置在 Yunzai-Bot 的 plugins 目录下
@@ -45,78 +67,65 @@ Node.js >= 18 / Node.js >= 14(with node-fetch)
 推荐使用 git 进行安装，以方便后续升级。在 Yunzai-Bot 根目录夹打开终端，运行下述指令进行安装
 
 ```shell
+# github源
 git clone --depth=1 https://github.com/ikechan8370/chatgpt-plugin.git ./plugins/chatgpt-plugin/
+
+# 网络不好连不上github可以使用gitee源，但更新可能不如github及时
+git clone --depth=1 https://gitee.com/ikechan/chatgpt-plugin.git ./plugins/chatgpt-plugin/
+
+# 以上二选一后执行下面步骤进入目录安装依赖
 cd plugins/chatgpt-plugin
 pnpm i
+
 ```
 
-如果是手工下载的 zip 压缩包，请将解压后的 chatgpt-plugin 文件夹（请删除压缩自带的-master后缀）放置在 Yunzai-Bot 目录下的 plugins 文件夹内
+如果是手工下载的 zip 压缩包，请将解压后的 chatgpt-plugin 文件夹（请删除压缩自带的-master或版本号后缀）放置在 Yunzai-Bot 目录下的 plugins 文件夹内
 
-> 浏览器模式仅为备选，如您需要使用浏览器模式，您还需要有**桌面环境**，优先级建议：API≈必应>API3>浏览器
-> 2.20更新：必应被大削，变得蠢了，建议还是API/API3优先
+> ~~浏览器模式仅为备选，如您需要使用浏览器模式，您还需要有**桌面环境**，优先级建议：API≈必应>API3>浏览器~~\
+> ~~2.20更新：必应被大削，变得蠢了，建议还是API/API3优先~~\
+> 4.2更新：必应站起来了，必应天下第一。建议都用必应，别用API/API3了。浏览器模式除非极其特殊的需求否则强烈建议不使用，已经不维护了。
 
 3. 修改配置
-**本插件配置项比较多，建议使用[锅巴面板](https://github.com/guoba-yunzai/Guoba-Plugin)修改**
+**本插件配置项比较多，强烈建议使用后台面板或[锅巴面板](https://github.com/guoba-yunzai/Guoba-Plugin)修改**
 
-   复制`plugins/chatgpt-plugin/config/config.example.json`并将其改名为`config.json`\
-   编辑`plugins/chatgpt-plugin/config/config.json`文件，修改必要配置项
+   或者创建和编辑config/config.json文件。
 
-4. 重启Yunzai-Bot
+4. 后台面板使用
+   初次使用请先私聊机器人 `#设置管理密码` 进登录密码设置
+私聊 `#chatgpt系统管理` 后机器人会回复系统管理页面网址，在此网址输入机器人QQ号和刚刚设置的管理密码点击登录即可进入后台管理系统
+如果忘记密码，再次私聊输入 `#设置管理密码` 后可重新设置密码
 
-> ### 我想使用浏览器模式，但是我是linux云服务器没有桌面环境怎么办？
->
-> linux云服务器可以安装窗口管理器和vnc创建并访问虚拟桌面环境
->
-> 1. 安装xvfb和fluxbox
->
->    - Ubuntu：`sudo apt-get install x11vnc xvfb fluxbox`
->
->    - CentOS：`sudo yum install x11vnc Xvfb fluxbox`
->
-> 2. 启动桌面环境
->
->    建议用tmux或screen等使其能够后台运行
->
->    注意：本命令使用默认5900端口和**无密码**，注意通过防火墙等保护，**切勿**在公网环境或不安全的网络环境下使用！！！
->    `x11vnc -create -env FD_PROG=/usr/bin/fluxbox -env X11VNC_FINDDISPLAY_ALWAYS_FAILS=1   -env X11VNC_CREATE_GEOM=${1:-1024x768x16}   -nopw -forever`
->
-> 3. 使用vnc客户端连接至云桌面
->
->    右键Applications > Shells > Bash打开终端，然后进入Yunzai目录下运行node app即可。
->
-> 4. 执行pnpm i时，sharp安装失败
->
->     sharp不影响chatgpt聊天，仅影响Dalle2绘图功能。ubuntu可以执行`apt install libvips-dev`之后再`pnpm i`
->
-> 实测该方案资源占用低，运行稳定，基本1核2G的轻量云服务器就足够了。
+   用户同样可私聊机器人 `#设置用户密码` 进行账号注册和密码设置
+用户设置密码后，所有聊天信息将记录在用户缓存数据下，同时用户可通过私聊机器人 `#chatgpt用户配置` 登录后台用户配置面板，查看自己的聊天数据和自定义机器人对自己的回复参数
+   
+   如果后台面板访问出现 time out 请检查机器人启动时是否有报错，服务器端口是否开放，可尝试ping一下服务器ip看能否直接ping通。
+
+5. 重启Yunzai-Bot
+如通过后台面板或锅巴面板升级可以热加载，无需重启。
 
 ---
-
-
 
 ### 相关配置
 
 #### 配置文件相关
 
-配置文件位置：`plugins/chatgpt-plugin/config/config.js`
+配置文件位置：`plugins/chatgpt-plugin/config/config.json`
 
 部分关键配置项，其他请参照文件内注释：
 
-|       名称        |        含义         |                          解释                          |
-| :---------------: | :-----------------: | :----------------------------------------------------: |
-|       PROXY       |      代理地址       |   请在此处配置你的代理，例如`http://127.0.0.1:7890`    |
-|      API_KEY      | openai账号的API Key | 获取地址：https://platform.openai.com/account/api-keys |
-| username/password | openai的账号和密码  |                           /                            |
+|        名称         |        含义         |                        解释                         |
+|:-----------------:| :-----------------: |:-------------------------------------------------:|
+|       proxy       |      代理地址       |       请在此处配置你的代理，例如`http://127.0.0.1:7890`        |
+|      apiKey       | openai账号的API Key | 获取地址：https://platform.openai.com/account/api-keys |
 
 #### Token相关
 
 与Token相关的设置需在qq与机器人对话设置，设置后方可使用对应的api
 
-|        名称         |         含义         |                             解释                             |        设置方式        |
-| :-----------------: | :------------------: | :----------------------------------------------------------: | :--------------------: |
-| ChatGPT AccessToken | ChatGPT登录后的Token |                        具体解释见下方                        |   \#chatgpt设置token   |
-|      必应token      |  必应登录后的Token   | 必应（Bing）将调用微软新必应接口进行对话。需要在必应网页能够正常使用新必应且设置有效的Bing 登录Cookie方可使用 | \#chatgpt设置必应token |
-
+|        名称         |         含义         |                             解释                             |                           设置方式                           |
+| :-----------------: | :------------------: | :----------------------------------------------------------: |:--------------------------------------------------------:|
+| ChatGPT AccessToken | ChatGPT登录后的Token |                        具体解释见下方                        |                     \#chatgpt设置token                     |
+|      必应token      |  必应登录后的Token   | 必应（Bing）将调用微软必应AI接口进行对话。不填写token对话上限为5句，填写后为20句。无论填写与否插件都会无限续杯。 | \#chatgpt设置必应token/\#chatgpt删除必应token/\#chatgpt查看必应token |
 
 
 > #### 我没有注册openai账号？如何获取
@@ -134,13 +143,14 @@ pnpm i
 >   - **登录后**访问https://chat.openai.com/api/auth/session
 >   - 您会获得类似如下一串json字符串`{"user":{"id":"AAA","name":"BBB","email":"CCC","image":"DDD","picture":"EEE","groups":[]},"expires":"FFF","accessToken":"XXX"}`
 >   - 其中的XXX即为`ChatGPT AccessToken`
+>   - 如果是空的{}，说明没有登录，要登录chatgpt而不是openai。
 >
 > #### ChatGPT AccessToken 设置了有什么用？我为什么用不了API模式
 >
-> - 请参考上方 [API模式和浏览器模式如何选择？](#API模式和浏览器模式如何选择？)
 > - 部分API需要在和机器人的聊天里输入`#chatgpt设置token`才可以使用
 >
 > #### 我有新必应的测试资格了，如何获取必应Token？
+> 2023/05/29 无需登录也可以使用了，要求不高可以不填
 >
 > 1. JS一键获取
 >
@@ -157,7 +167,6 @@ pnpm i
 >
 >
 > 其他问题可以参考使用的api库 https://github.com/transitive-bullshit/chatgpt-api 以及 https://github.com/waylaidwanderer/node-chatgpt-api
-
 
 
 ### 使用方法
@@ -193,7 +202,7 @@ pnpm i
 
 #### 设置相关
 
-> #chat切换浏览器/API/API2/API3/Bing
+> #chatgpt切换浏览器/API/API2/API3/Bing
 >
 > #chatgpt设置[必应]Token
 >
@@ -224,7 +233,10 @@ pnpm i
 
 ## TODO
 
-* prompt预设与共享
+* V3重构
+* 插件in插件
+* langchain分支完善
+* 游戏机制
 
 ## 其他
 
@@ -256,13 +268,22 @@ pnpm i
    
    能。参考[这里](https://ikechan8370.com/archives/da-jian-chatgpt-guan-fang-fan-xiang-dai-li)
 
-5. vit API能本地搭建吗？
+   必应可以用[azure](https://ikechan8370.com/archives/ji-yu-azure-container-web-applicationda-jian-mian-fei-bi-ying-fan-dai)或~cloudflare workers~的serverless服务：
+
+   (202307 Cloudflare亡了！)
+
+6. vit API能本地搭建吗？
 
    能。克隆下来安装依赖直接运行即可。
+
+7. 系统后台无法进入怎么办？
+
+   多数情况下是由于服务器未开放3321端口导致，请根据服务器系统和服务器供应商配置，开放3321端口后再试。
    
 ## 交流群
 
-* QQ 559567232
+* QQ 559567232 [问题交流]
+* QQ 126132049 [机器人试验场]
 
 ## 感谢
 
@@ -278,6 +299,7 @@ pnpm i
 
 图片以及Bing模式支持 @HalcyonAlcedo
 * https://github.com/HalcyonAlcedo/ChatGPT-Plugin-PageCache
+* https://github.com/HalcyonAlcedo/cache-web
 
 语音vits模型来自于
 * https://huggingface.co/spaces/sayashi/vits-uma-genshin-honkai
@@ -290,6 +312,12 @@ ChatGLM
 * https://huggingface.co/THUDM/chatglm-6b
 * https://github.com/THUDM/ChatGLM-6B
 
+## 赞助
+
+如果觉得本项目好玩或者对你有帮助，愿意的话可以赞助我一口快乐水：
+
+https://afdian.net/a/ikechan8370
+
 ## 贡献者
 
 感谢以下贡献者
@@ -300,3 +328,17 @@ ChatGLM
 
 
 ![Alt](https://repobeats.axiom.co/api/embed/076d597ede41432208435f233d18cb20052fb90a.svg "Repobeats analytics image")
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ikechan8370/chatgpt-plugin&type=Date)](https://star-history.com/#ikechan8370/chatgpt-plugin&Date)
+
+## 工具支持
+<a href="https://jb.gg/OpenSourceSupport" >
+   <img style="width: 300px" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png"/>
+</a>
+
+JetBrains for Open Source development license
+
+
+

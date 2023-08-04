@@ -1,6 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import { Config } from '../utils/config.js'
-import { render } from '../utils/common.js'
+import { render, renderUrl } from '../utils/common.js'
 let version = Config.version
 let helpData = [
   {
@@ -13,8 +13,8 @@ let helpData = [
       },
       {
         icon: 'chat',
-        title: '#chat1/#chat3/#chatglm/#bing',
-        desc: '分别使用API/API3/ChatGLM/Bing模式与机器人聊天，无论主人设定了何种全局模式'
+        title: '#chat1/#chat3/#chatglm/#bing/#claude/#xh',
+        desc: '分别使用API/API3/ChatGLM/Bing/Claude/星火模式与机器人聊天，无论主人设定了何种全局模式'
       },
       {
         icon: 'chat-private',
@@ -38,18 +38,28 @@ let helpData = [
       },
       {
         icon: 'destroy',
-        title: '#结束对话',
+        title: '#(结束|新开|摧毁|毁灭|完结)对话',
         desc: '结束自己当前对话，下次开启对话机器人将遗忘掉本次对话内容。'
       },
       {
         icon: 'destroy',
-        title: '#结束全部对话',
+        title: '#(结束|新开|摧毁|毁灭|完结)全部对话',
         desc: '结束正在与本机器人进行对话的全部用户的对话。'
       },
       {
         icon: 'destroy-other',
-        title: '#结束对话 @某人',
+        title: '#(结束|新开|摧毁|毁灭|完结)对话 @某人',
         desc: '结束该用户当前对话，下次开启对话机器人将遗忘掉本次对话内容。'
+      },
+      {
+        icon: 'confirm',
+        title: '#chatgpt(导出)聊天记录',
+        desc: '图片形式导出聊天记录，目前仅支持Bing下的Sydney和自定义'
+      },
+      {
+        icon: 'smiley-wink',
+        title: '#claude开启新对话+设定名',
+        desc: '结束之前的对话，并开启一个新的Claude对话，如果设定名不为空的话，会使用这个设定。设定必须是设定列表中有的设定。'
       }
     ]
   },
@@ -94,7 +104,7 @@ let helpData = [
       {
         icon: 'game',
         title: '#chatgpt设置语音角色',
-        desc: '设置语音模式下回复的角色音色'
+        desc: '设置语音模式下回复的角色音色。优先级高于默认语音角色'
       },
       {
         icon: 'list',
@@ -133,8 +143,8 @@ let helpData = [
       },
       {
         icon: 'switch',
-        title: '#chatgpt切换浏览器/API/API3/Bing/ChatGLM',
-        desc: '切换使用的后端为浏览器或OpenAI API/反代官网API/Bing/自建ChatGLM'
+        title: '#chatgpt切换浏览器/API/API3/Bing/ChatGLM/Claude/Poe',
+        desc: '切换使用的后端为浏览器或OpenAI API/反代官网API/Bing/自建ChatGLM/Slack Claude/Poe'
       },
       {
         icon: 'confirm',
@@ -145,6 +155,21 @@ let helpData = [
         icon: 'confirm',
         title: '#chatgpt必应(开启|关闭)建议回复',
         desc: '开关Bing模式下的建议回复。'
+      },
+      {
+        icon: 'list',
+        title: '#(关闭|打开)群聊上下文',
+        desc: '开启后将会发送近期群聊中的对话给机器人提供参考'
+      },
+      {
+        icon: 'switch',
+        title: '#chatgpt(允许|禁止|打开|关闭|同意)私聊',
+        desc: '开启后将关闭本插件的私聊通道。(主人不影响)'
+      },
+      {
+        icon: 'token',
+        title: '#chatgpt(设置|添加)群聊[白黑]名单',
+        desc: '白名单配置后只有白名单内的群可使用本插件，配置黑名单则会在对应群聊禁用本插件'
       }
     ]
   },
@@ -167,6 +192,11 @@ let helpData = [
         desc: '设置APIKey'
       },
       {
+        icon: 'key',
+        title: '#chatgpt设置星火token',
+        desc: '设置星火ssoSessionId（对话页面的ssoSessionId cookie值）'
+      },
+      {
         icon: 'eat',
         title: '#chatgpt设置(API|Sydney)设定',
         desc: '设置AI的默认风格设定'
@@ -175,6 +205,16 @@ let helpData = [
         icon: 'eat',
         title: '#chatgpt查看(API|Sydney)设定',
         desc: '查看AI当前的风格设定，文本形式返回，设定太长可能发不出来'
+      },
+      {
+        icon: 'token',
+        title: '#chatgpt设置后台刷新token',
+        desc: '用于查看API余额。注意和配置的key保持同一账号。'
+      },
+      {
+        icon: 'token',
+        title: '#chatgpt(开启|关闭)智能模式',
+        desc: 'API模式下打开或关闭智能模式。'
       }
     ]
   },
@@ -194,28 +234,58 @@ let helpData = [
       {
         icon: 'coin',
         title: '#chatgpt添加设定',
-        desc: '添加一个设定，分此输入设定名称和设定内容'
+        desc: '添加一个设定，分此输入设定名称和设定内容。如果名字已存在，则会覆盖（相当于修改）'
       },
       {
         icon: 'switch',
         title: '#chatgpt使用设定【设定名】',
-        desc: '使用某个设定'
+        desc: '使用某个设定。'
       },
       {
         icon: 'confirm',
         title: '#chatgpt(上传|分享|共享)设定',
-        desc: '敬请期待'
+        desc: '上传设定'
+      },
+      {
+        icon: 'confirm',
+        title: '#chatgpt(删除|取消|撤销)共享设定+设定名',
+        desc: '从远端删除，只能删除自己上传的设定，根据机器人主人qq号判断。'
+      },
+      {
+        icon: 'confirm',
+        title: '#chatgpt(在线)浏览设定(+关键词)(页码X)',
+        desc: '搜索公开的设定。默认返回前十条，使用页码X可以翻页，使用关键词可以检索。页码从1开始。'
+      },
+      {
+        icon: 'smiley-wink',
+        title: '#chatgpt预览设定详情(+设定名)',
+        desc: '根据设定名称预览云端设定的详情信息。'
       },
       {
         icon: 'confirm',
         title: '#chatgpt导入设定',
-        desc: '敬请期待'
+        desc: '导入其他人分享的设定。注意：相同名字的设定，会覆盖本地已有的设定'
       },
+      // {
+      //   icon: 'confirm',
+      //   title: '#chatgpt开启/关闭洗脑',
+      //   desc: '开启或关闭洗脑'
+      // },
+      // {
+      //   icon: 'confirm',
+      //   title: '#chatgpt设置洗脑强度+【强度】',
+      //   desc: '设置洗脑强度'
+      // },
+      // {
+      //   icon: 'confirm',
+      //   title: '#chatgpt设置洗脑名称+【名称】',
+      //   desc: '设置洗脑名称'
+      // },
       {
         icon: 'help',
         title: '#chatgpt设定帮助',
         desc: '设定帮助'
-      },
+      }
     ]
   },
   {
@@ -223,13 +293,18 @@ let helpData = [
     list: [
       {
         icon: 'smiley-wink',
-        title: '#chatgpt打招呼(群号)',
+        title: '#chatgpt打招呼(群号|帮助)',
         desc: '让AI随机到某个群去打招呼'
       },
       {
         icon: 'help',
         title: '#chatgpt模式帮助',
         desc: '查看多种聊天模式的区别及当前使用的模式'
+      },
+      {
+        icon: 'help',
+        title: '#chatgpt全局回复帮助',
+        desc: '获取配置全局回复模式和全局语音角色的命令帮助'
       },
       {
         icon: 'help',
@@ -243,20 +318,33 @@ let helpData = [
 export class help extends plugin {
   constructor (e) {
     super({
-      name: 'ChatGPT-Plugin帮助',
-      dsc: 'ChatGPT-Plugin帮助',
+      name: 'ChatGPT-Plugin 帮助',
+      dsc: 'ChatGPT-Plugin 帮助面板',
       event: 'message',
       priority: 500,
       rule: [
         {
           reg: '^#(chatgpt|ChatGPT)(命令|帮助|菜单|help|说明|功能|指令|使用说明)$',
           fnc: 'help'
+        },
+        {
+          reg: '^#帮助-',
+          fnc: 'newHelp'
         }
       ]
     })
   }
 
   async help (e) {
-    await render(e, 'chatgpt-plugin', 'help/index', { helpData, version })
+    if (Config.newhelp && !Config.oldview) { 
+      await renderUrl(e, `http://127.0.0.1:${Config.serverPort || 3321}/help/`, { Viewport: { width: 800, height: 600 } }) 
+    } else {
+      await render(e, 'chatgpt-plugin', 'help/index', { helpData, version }) 
+    }
+  }
+
+  async newHelp (e) {
+    let use = e.msg.replace(/^#帮助-/, '').toUpperCase().trim()
+    await renderUrl(e, `http://127.0.0.1:${Config.serverPort || 3321}/help/` + use, { Viewport: { width: 800, height: 600 } })
   }
 }

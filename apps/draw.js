@@ -1,9 +1,9 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import { segment } from 'oicq'
 import { createImage, editImage, imageVariation } from '../utils/dalle.js'
 import { makeForwardMsg } from '../utils/common.js'
 import _ from 'lodash'
 import { Config } from '../utils/config.js'
+import BingDrawClient from '../utils/BingDraw.js'
 
 export class dalle extends plugin {
   constructor (e) {
@@ -11,7 +11,7 @@ export class dalle extends plugin {
       name: 'ChatGPT-Plugin Dalle 绘图',
       dsc: 'ChatGPT-Plugin基于OpenAI Dalle的绘图插件',
       event: 'message',
-      priority: 500,
+      priority: 600,
       rule: [
         {
           reg: '^#(chatgpt|ChatGPT|dalle|Dalle)(绘图|画图)',
@@ -28,6 +28,10 @@ export class dalle extends plugin {
         {
           reg: '^#(chatgpt|dalle)编辑图片',
           fnc: 'edit'
+        },
+        {
+          reg: '^#bing(画图|绘图)',
+          fnc: 'bingDraw'
         }
       ]
     })
@@ -211,7 +215,7 @@ export class dalle extends plugin {
     }
     try {
       let images = (await editImage(imgUrl, position.split(',').map(p => parseInt(p, 10)), prompt, num, size))
-        .map(image => segment.image(`base64://${image}`))
+          .map(image => segment.image(`base64://${image}`))
       if (images.length > 1) {
         this.reply(await makeForwardMsg(e, images, prompt))
       } else {
@@ -221,6 +225,59 @@ export class dalle extends plugin {
       logger.error(err.response?.data?.error?.message || err.message || JSON.stringify(err.response || {}))
       this.reply(`图片编辑失败: ${err.response?.data?.error?.message || err.message || JSON.stringify(err.response || {})}`, true)
       await redis.del(`CHATGPT:EDIT:${e.sender.user_id}`)
+    }
+  }
+
+  async bingDraw (e) {
+    let ttl = await redis.ttl(`CHATGPT:DRAW:${e.sender.user_id}`)
+    if (ttl > 0 && !e.isMaster) {
+      this.reply(`冷却中，请${ttl}秒后再试`)
+      return false
+    }
+    let prompt = e.msg.replace(/^#bing(画图|绘图)/, '')
+    if (!prompt) {
+      this.reply('请提供绘图prompt')
+      return false
+    }
+    this.reply('在画了，请稍等……')
+    let bingToken = ''
+    if (await redis.exists('CHATGPT:BING_TOKENS') != 0) {
+      let bingTokens = JSON.parse(await redis.get('CHATGPT:BING_TOKENS'))
+      const normal = bingTokens.filter(element => element.State === '正常')
+      const restricted = bingTokens.filter(element => element.State === '受限')
+      if (normal.length > 0) {
+        const minElement = normal.reduce((min, current) => {
+          return current.Usage < min.Usage ? current : min
+        })
+        bingToken = minElement.Token
+      } else if (restricted.length > 0) {
+        const minElement = restricted.reduce((min, current) => {
+          return current.Usage < min.Usage ? current : min
+        })
+        bingToken = minElement.Token
+      } else {
+        throw new Error('全部Token均已失效，暂时无法使用')
+      }
+    }
+    if (!bingToken) {
+      throw new Error('未绑定Bing Cookie，请使用#chatgpt设置必应token命令绑定Bing Cookie')
+    }
+    // 记录token使用
+    let bingTokens = JSON.parse(await redis.get('CHATGPT:BING_TOKENS'))
+    const index = bingTokens.findIndex(element => element.Token === bingToken)
+    bingTokens[index].Usage += 1
+    await redis.set('CHATGPT:BING_TOKENS', JSON.stringify(bingTokens))
+
+    let client = new BingDrawClient({
+      baseUrl: Config.sydneyReverseProxy,
+      userToken: bingToken
+    })
+    await redis.set(`CHATGPT:DRAW:${e.sender.user_id}`, 'c', { EX: 30 })
+    try {
+      await client.getImages(prompt, e)
+    } catch (err) {
+      await redis.del(`CHATGPT:DRAW:${e.sender.user_id}`)
+      await e.reply('绘图失败：' + err)
     }
   }
 }
